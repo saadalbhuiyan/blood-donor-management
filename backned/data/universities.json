@@ -1,0 +1,10 @@
+[
+  {
+    "name": "University of Dhaka",
+    "departments": ["CSE", "EEE", "Law", "Economics"]
+  },
+  {
+    "name": "BUET",
+    "departments": ["CSE", "EEE", "Civil", "Mechanical"]
+  }
+]
