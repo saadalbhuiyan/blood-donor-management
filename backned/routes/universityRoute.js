@@ -1,16 +1,14 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const universities = require("../data/universities.json");
+const {
+    getAllUniversities,
+    getDepartmentsByUniversity
+} = require('../controllers/universityController');
 
-router.get("/", (req, res) => {
-    res.json(universities.map(u => u.name));
-});
+// Get list of all university names
+router.get('/', getAllUniversities);
 
-router.get("/departments", (req, res) => {
-    const universityName = req.query.university;
-    const uni = universities.find(u => u.name === universityName);
-    if (!uni) return res.status(404).json({ message: "University not found." });
-    res.json(uni.departments);
-});
+// Get departments of a selected university
+router.get('/:university/departments', getDepartmentsByUniversity);
 
 module.exports = router;
