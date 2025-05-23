@@ -1,13 +1,13 @@
 // bloodSearchController.js
-const Donor = require('../models/donorModel'); // ধরে নিচ্ছি Donor মডেল আছে
+const Donor = require('../models/donorModel'); // Assuming the Donor model is defined
 
-// Search Donors by blood group, university, and department (optional)
+// Search donors by blood group, university, and department (optional)
 const searchDonors = async (req, res) => {
     try {
-        // Query parameters
+        // Extract query parameters
         const { bloodGroup, university, department } = req.query;
 
-        // Validation: bloodGroup and university are required
+        // Validation: bloodGroup and university are mandatory
         if (!bloodGroup || !university) {
             return res.status(400).json({ message: 'Blood group and university are required' });
         }
@@ -16,23 +16,23 @@ const searchDonors = async (req, res) => {
         const query = {
             bloodGroup,
             university,
-            available: true, // Only return available donors
+            available: true, // Only fetch available donors
         };
 
-        // Add department to query if provided
+        // Include department in query if provided
         if (department) {
             query.department = department;
         }
 
-        // Fetch donors from MongoDB
+        // Fetch donors from MongoDB based on the query
         const donors = await Donor.find(query).select('name mobile department batch notes');
 
-        // Check if donors are found
+        // Check if any donors are found
         if (donors.length === 0) {
             return res.status(404).json({ message: 'No available donors found' });
         }
 
-        // Return donor list
+        // Return the list of donors
         res.status(200).json(donors);
     } catch (error) {
         console.error('Error searching donors:', error);

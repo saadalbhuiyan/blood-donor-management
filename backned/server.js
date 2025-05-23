@@ -8,24 +8,26 @@ const donorRoute = require('./routes/donorRoute');
 const universityRoute = require('./routes/universityRoute');
 const bloodSearchRoutes = require('./routes/bloodSearchRoute');
 
+// Load environment variables
 dotenv.config();
 
 const app = express();
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(express.json());  // Parse incoming JSON requests
+app.use(express.urlencoded({ extended: true }));  // Parse URL-encoded data
+app.use(cors());  // Enable Cross-Origin Resource Sharing
 
 // Database Connection
-connectDB();
+connectDB();  // Connect to MongoDB
 
-// ✅ Important: Mount search routes before donorRoute to prevent ":id" conflict
-app.use('/api/donors', bloodSearchRoutes);     // ✅ /api/donors/search
-app.use('/api/donors', donorRoute);            // ✅ /api/donors/:id
-app.use('/api/universities', universityRoute); // ✅ university routes
+// Route Mounting
+// Important: Mount search routes before donorRoute to prevent ":id" conflict
+app.use('/api/donors', bloodSearchRoutes);     // Search donors: /api/donors/search
+app.use('/api/donors', donorRoute);            // Donor CRUD: /api/donors/:id
+app.use('/api/universities', universityRoute); // University and departments routes
 
-// Server Listen
+// Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`✅ Server is running on port ${PORT}`);

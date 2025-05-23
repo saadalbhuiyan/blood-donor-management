@@ -9,15 +9,19 @@ const {
     toggleAvailability
 } = require('../controllers/donorController');
 
-// Phase 3
+// Register a new donor (Phase 3)
 router.post('/register', registerDonor);
 
-// Phase 4
+// Login a donor (Phase 4)
 router.post('/login', loginDonor);
 
-// Phase 5
+// Get donor profile (Phase 5)
 router.get('/:id', getDonorProfile);
+
+// Update donor profile (Phase 5)
 router.put('/:id', updateDonorProfile);
+
+// Toggle donor availability (Phase 5)
 router.patch('/:id/availability', toggleAvailability);
 
 module.exports = router;

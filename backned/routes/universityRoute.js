@@ -5,10 +5,10 @@ const {
     getDepartmentsByUniversity
 } = require('../controllers/universityController');
 
-// Get list of all university names
+// Route to get a list of all university names
 router.get('/', getAllUniversities);
 
-// Get departments of a selected university
+// Route to get departments of a selected university
 router.get('/:university/departments', getDepartmentsByUniversity);
 
 module.exports = router;
