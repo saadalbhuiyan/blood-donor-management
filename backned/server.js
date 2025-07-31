@@ -1,34 +1,72 @@
+// Import required modules
 const express = require('express');
-const cors = require('cors');
+const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const connectDB = require('./config/db');
+const cors = require('cors');
+const path = require('path');
 
-// Import Routes
-const donorRoute = require('./routes/donorRoute');
-const universityRoute = require('./routes/universityRoute');
-const bloodSearchRoutes = require('./routes/bloodSearchRoute');
+// Import routes
+const adminRoutes = require('./routes/adminRoutes');
+const adminDonorRoutes = require('./routes/adminDonorRoutes');
+const donorRoutes = require('./routes/donorRoutes');
+const donorAuthRoutes = require('./routes/donorAuthRoutes');
+const donorDashboardRoutes = require('./routes/donorDashboardRoutes');
+const bloodRequestRoutes = require('./routes/bloodRequestRoutes');
 
-// Load environment variables
+// Middleware for error handling
+const errorHandler = (err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something went wrong', error: err.message });
+};
+
+// Initialize dotenv
 dotenv.config();
 
+// Initialize express app
 const app = express();
 
-// Middleware
-app.use(express.json());  // Parse incoming JSON requests
-app.use(express.urlencoded({ extended: true }));  // Parse URL-encoded data
-app.use(cors());  // Enable Cross-Origin Resource Sharing
+// Set port
+const port = process.env.PORT || 5000;
 
-// Database Connection
-connectDB();  // Connect to MongoDB
+// Middleware for parsing JSON requests
+app.use(express.json());
+app.use(cors()); // Allow Cross-Origin Resource Sharing
 
-// Route Mounting
-// Important: Mount search routes before donorRoute to prevent ":id" conflict
-app.use('/api/donors', bloodSearchRoutes);     // Search donors: /api/donors/search
-app.use('/api/donors', donorRoute);            // Donor CRUD: /api/donors/:id
-app.use('/api/universities', universityRoute); // University and departments routes
+// Serve static files (e.g., profile pictures)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`✅ Server is running on port ${PORT}`);
+// Database connection
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => {
+        console.log('MongoDB Connected');
+    })
+    .catch((err) => {
+        console.error('Database connection failed:', err);
+    });
+
+// Routes
+// Admin Routes (Authentication, Profile, University, Department)
+app.use('/api/admin', adminRoutes);
+
+// Admin Donor Routes (List, Get, Delete Donors)
+app.use('/api/admin', adminDonorRoutes);
+
+// Donor Routes (Registration, Blood Groups, Universities, Departments)
+app.use('/api', donorRoutes);
+
+// Donor Authentication Routes (Login, Logout)
+app.use('/api', donorAuthRoutes);
+
+// Donor Dashboard Routes (Profile, Avatar, Availability)
+app.use('/api', donorDashboardRoutes);
+
+// Blood Request Routes (Search Donors)
+app.use('/api', bloodRequestRoutes);
+
+// Error Handling Middleware
+app.use(errorHandler);
+
+// Start the server
+app.listen(port, () => {
+    console.log(`Server running on port ${port}`);
 });
